@@ -2,24 +2,51 @@
 
 namespace Database\Seeders;
 
+use App\Models\Genre;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Wallet;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $admin = User::firstOrCreate(
+            ['email' => 'bipro@moviebuzz.com'],
+            [
+                'name' => 'MovieBuzz Admin',
+                'password' => Hash::make('bipro096'),
+                'role' => 'admin',
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+        Wallet::firstOrCreate(['user_id' => $admin->id], ['balance' => 0]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $demo = User::firstOrCreate(
+            ['email' => 'bbcustomer@moviebuzz.com'],
+            [
+                'name' => 'BBCustomer',
+                'password' => Hash::make('bipro096'),
+                'role' => 'customer',
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+        Wallet::firstOrCreate(['user_id' => $demo->id], ['balance' => 500]);
+
+        $genres = [
+            'Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary',
+           
+        ];
+
+        foreach ($genres as $name) {
+            Genre::firstOrCreate(['name' => $name], ['slug' => Str::slug($name)]);
+        }
+
+        $this->command->info('Admin login: bipro@moviebuzz.com / bipro096');
+        $this->command->info('Customer login: bbcustomer@moviebuzz.com / bipro096');
     }
 }
