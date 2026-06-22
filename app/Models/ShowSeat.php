@@ -11,7 +11,14 @@ class ShowSeat extends Model
         'status', 'locked_by', 'locked_at',
     ];
 
-  
+    protected function casts(): array
+    {
+        return [
+            'price' => 'decimal:2',
+            'locked_at' => 'datetime',
+        ];
+    }
+
     public function show()
     {
         return $this->belongsTo(Show::class);
@@ -27,4 +34,15 @@ class ShowSeat extends Model
         return $this->belongsTo(User::class, 'locked_by');
     }
 
+    public function isBookable(): bool
+    {
+        if ($this->status === 'available') {
+            return true;
+        }
+        // stale lock older than 10 minutes is considered free again
+        if ($this->status === 'locked' && $this->locked_at && $this->locked_at->lt(now()->subMinutes(10))) {
+            return true;
+        }
+        return false;
+    }
 }

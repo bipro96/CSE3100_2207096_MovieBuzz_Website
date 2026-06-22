@@ -13,7 +13,11 @@ body.mb-body {
 
 a { color: var(--mb-accent); }
 
-
+.mb-navbar {
+    background-color: rgba(14, 15, 26, 0.95);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #2a2b3d;
+}
 .mb-navbar .nav-link, .mb-navbar .navbar-brand { color: var(--mb-text) !important; }
 .mb-navbar .nav-link:hover { color: var(--mb-accent) !important; }
 
@@ -45,7 +49,16 @@ a { color: var(--mb-accent); }
     background: linear-gradient(120deg, #1c1d33, #0e0f1a);
 }
 
-
+.mb-movie-card { transition: transform .15s ease; }
+.mb-movie-card:hover { transform: translateY(-4px); }
+.mb-poster-wrap { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 2/3; }
+.mb-poster-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.mb-rating-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(0,0,0,.7); color: #fff; font-size: .75rem;
+    padding: 2px 6px; border-radius: 6px;
+}
+.mb-movie-card h6, .mb-movie-card p { color: var(--mb-text); }
 
 .mb-filter-box, .mb-showtime-block {
     background: var(--mb-surface);
@@ -55,8 +68,21 @@ a { color: var(--mb-accent); }
 
 .mb-backdrop { background-size: cover; background-position: center; }
 
-
+.mb-wallet-card {
+    background: linear-gradient(135deg, #2c2e55, #171827);
+    border-radius: 14px;
+    border: 1px solid #33355a;
+}
 
 .mb-footer { background: #0a0b14; border-top: 1px solid #2a2b3d; }
 .mb-footer a { color: #b8b9c9; text-decoration: none; }
 .mb-footer a:hover { color: var(--mb-accent); }
+
+.table { color: var(--mb-text); }
+.form-control, .form-select {
+    background: #0e0f1a; border: 1px solid #33355a; color: var(--mb-text);
+}
+.form-control:focus, .form-select:focus {
+    background: #0e0f1a; color: var(--mb-text); border-color: var(--mb-accent);
+    box-shadow: 0 0 0 .2rem rgba(244,180,0,.15);
+}

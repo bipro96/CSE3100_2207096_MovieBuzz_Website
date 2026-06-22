@@ -49,6 +49,51 @@ class Movie extends Model
         return $this->belongsToMany(Genre::class, 'genre_movie');
     }
 
+    public function shows()
+    {
+        return $this->hasMany(Show::class);
+    }
+
+    public function upcomingShows()
+    {
+        return $this->hasMany(Show::class)->where('starts_at', '>', now())->where('status', 'scheduled');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class)->where('status', 'approved')->latest();
+    }
+
+    public function posterUrl(): string
+    {
+        if ($this->poster_path && Storage::disk('public')->exists($this->poster_path)) {
+            return Storage::url($this->poster_path);
+        }
+        return asset('images/poster-placeholder.png');
+    }
+
+    public function backdropUrl(): string
+    {
+        if ($this->backdrop_path && Storage::disk('public')->exists($this->backdrop_path)) {
+            return Storage::url($this->backdrop_path);
+        }
+        return asset('images/backdrop-placeholder.png');
+    }
+
+    public function scopeNowShowing($query)
+    {
+        return $query->where('listing_status', 'now_showing')->where('is_active', true);
+    }
+
+    public function scopeUpcoming($query)
+    {
+        return $query->where('listing_status', 'upcoming')->where('is_active', true);
+    }
 
     public function scopeFeatured($query)
     {

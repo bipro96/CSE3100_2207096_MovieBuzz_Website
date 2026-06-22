@@ -30,4 +30,8 @@ class WalletTransaction extends Model
         return $this->belongsTo(Wallet::class);
     }
 
+    public function transactionable()
+    {
+        return $this->morphTo();
+    }
 }

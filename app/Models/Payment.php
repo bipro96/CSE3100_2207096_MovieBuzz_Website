@@ -13,7 +13,10 @@ class Payment extends Model
         return ['amount' => 'decimal:2'];
     }
 
-  
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class);
+    }
 
     public function user()
     {

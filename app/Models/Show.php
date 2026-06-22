@@ -34,6 +34,29 @@ class Show extends Model
         return $this->belongsTo(Cinema::class);
     }
 
+    public function hall()
+    {
+        return $this->belongsTo(Hall::class);
+    }
+
+    public function seats()
+    {
+        return $this->hasMany(ShowSeat::class)->orderBy('seat_code');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function priceFor(string $seatType): float
+    {
+        return match ($seatType) {
+            'premium' => (float) ($this->premium_price ?? $this->ticket_price),
+            'vip' => (float) ($this->vip_price ?? $this->ticket_price),
+            default => (float) $this->ticket_price,
+        };
+    }
 
     public function scopeUpcoming($query)
     {
