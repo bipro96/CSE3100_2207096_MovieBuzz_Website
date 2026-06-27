@@ -1,0 +1,73 @@
+:root {
+    --ad-bg: #0f1117;
+    --ad-surface: #171a24;
+    --ad-accent: #f4b400;
+    --ad-text: #e6e7ee;
+    --ad-border: #262936;
+}
+
+body.admin-body { background: var(--ad-bg); color: var(--ad-text); font-family: 'Segoe UI', system-ui, sans-serif; }
+
+.admin-wrapper { min-height: 100vh; }
+
+.admin-sidebar {
+    width: 240px;
+    background: var(--ad-surface);
+    border-right: 1px solid var(--ad-border);
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+}
+.sidebar-brand { padding: 20px; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid var(--ad-border); }
+.sidebar-brand a { color: var(--ad-text); text-decoration: none; }
+
+.sidebar-nav { padding: 10px 0; }
+.sidebar-nav a {
+    display: block; padding: 10px 20px; color: #a8aab8; text-decoration: none; font-size: .9rem;
+}
+.sidebar-nav a i { width: 20px; }
+.sidebar-nav a:hover, .sidebar-nav a.active {
+    background: rgba(244,180,0,.08); color: var(--ad-accent); border-left: 3px solid var(--ad-accent);
+}
+
+.admin-topbar {
+    background: var(--ad-surface);
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--ad-border);
+}
+.admin-topbar a { color: var(--ad-text); }
+
+.admin-body-content { padding: 24px; }
+
+.admin-panel-box, .admin-stat-card {
+    background: var(--ad-surface);
+    border: 1px solid var(--ad-border);
+    border-radius: 12px;
+}
+
+.admin-stat-card {
+    display: flex; align-items: center; gap: 14px; padding: 18px;
+}
+.admin-stat-card i { font-size: 1.8rem; color: var(--ad-accent); }
+.admin-stat-card h4 { margin: 0; font-weight: bold; }
+.admin-stat-card p { margin: 0; font-size: .8rem; color: #a8aab8; }
+
+.table { color: var(--ad-text); }
+.form-control, .form-select {
+    background: #0f1117; border: 1px solid var(--ad-border); color: var(--ad-text);
+}
+.form-control:focus, .form-select:focus {
+    background: #0f1117; color: var(--ad-text); border-color: var(--ad-accent);
+    box-shadow: 0 0 0 .2rem rgba(244,180,0,.15);
+}
+
+.tmdb-results-dropdown {
+    position: absolute; top: 46px; left: 0; right: 90px;
+    background: #0f1117; border: 1px solid var(--ad-border); border-radius: 8px;
+    z-index: 50; max-height: 320px; overflow-y: auto;
+}
+.tmdb-result-item {
+    display: flex; gap: 10px; padding: 8px 12px; cursor: pointer; align-items: center;
+}
+.tmdb-result-item:hover { background: #1b1e2a; }
+.tmdb-result-item img { width: 36px; height: 50px; object-fit: cover; border-radius: 4px; }
