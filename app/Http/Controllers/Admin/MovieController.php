@@ -43,20 +43,6 @@ class MovieController extends Controller
     {
         $request->validate(['query' => 'required|string|min:2']);
 
-        try {
-            $results = $this->tmdb->search($request->query('query'));
-        } catch (\Throwable $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
-        }
-
-        $mapped = collect($results)->take(8)->map(fn ($r) => [
-            'tmdb_id' => $r['id'],
-            'title' => $r['title'] ?? $r['original_title'] ?? 'Untitled',
-            'release_date' => $r['release_date'] ?? null,
-            'poster_path' => $r['poster_path'] ?? null,
-            'poster_thumb' => $r['poster_path'] ? 'https://image.tmdb.org/t/p/w92' . $r['poster_path'] : null,
-        ])->values();
-
         return response()->json(['results' => $mapped]);
     }
 
