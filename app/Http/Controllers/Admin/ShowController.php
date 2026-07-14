@@ -19,7 +19,13 @@ class ShowController extends Controller
 
     public function index(Request $request)
     {
-   
+        $shows = Show::with('movie', 'cinema', 'hall')
+            ->when($request->filled('movie_id'), fn ($q) => $q->where('movie_id', $request->movie_id))
+            ->when($request->filled('cinema_id'), fn ($q) => $q->where('cinema_id', $request->cinema_id))
+            ->orderByDesc('starts_at')
+            ->paginate(15)
+            ->withQueryString();
+
         $movies = Movie::orderBy('title')->get();
         $cinemas = Cinema::orderBy('name')->get();
 
@@ -41,7 +47,11 @@ class ShowController extends Controller
             'hall_id' => 'required|exists:halls,id',
             'show_date' => 'required|date|after_or_equal:today',
             'show_time' => 'required',
-       
+            'language' => 'nullable|string|max:50',
+            'format' => 'required|string|max:20',
+            'ticket_price' => 'required|numeric|min:0',
+            'premium_price' => 'nullable|numeric|min:0',
+            'vip_price' => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -59,12 +69,18 @@ class ShowController extends Controller
         return view('admin.shows.edit', compact('show'));
     }
 
+ 
+   // Only price/status/language/format are editable after seats exist,
+     
     public function update(Request $request, Show $show)
     {
         $validated = $request->validate([
             'language' => 'nullable|string|max:50',
             'format' => 'required|string|max:20',
-       
+            'ticket_price' => 'required|numeric|min:0',
+            'premium_price' => 'nullable|numeric|min:0',
+            'vip_price' => 'nullable|numeric|min:0',
+            'status' => 'required|in:scheduled,ongoing,completed,cancelled',
         ]);
 
         $show->update($validated);
@@ -72,6 +88,9 @@ class ShowController extends Controller
         return redirect()->route('admin.shows.index')->with('success', 'Show updated.');
     }
 
+  
+     // Cancelling a show refunds every confirmed booking automatically.
+   
     public function destroy(Show $show)
     {
         $bookings = $show->bookings()->where('status', 'confirmed')->get();
@@ -80,7 +99,7 @@ class ShowController extends Controller
             try {
                 $this->bookingService->cancelBooking($booking, force: true);
             } catch (RuntimeException $e) {
-              
+                
             }
         }
 
@@ -90,5 +109,10 @@ class ShowController extends Controller
     }
 
   
-   
+     // AJAX.. fetch halls belonging to a cinema, for the create-show form.
+ 
+    public function hallsForCinema(Cinema $cinema)
+    {
+        return response()->json($cinema->halls()->where('is_active', true)->get(['id', 'name']));
+    }
 }

@@ -27,6 +27,26 @@ class MovieController extends Controller
     
 
 
+/*
+    public function index(Request $request)
+    {
+        $genres = Cache::remember('genres.all', 600, fn () => Genre::orderBy('name')->get());
+
+        $movies = Movie::query()
+            ->where('is_active', true)
+            ->with('genres')
+            ->when($request->filled('q'), fn ($q) => $q->where('title', 'like', '%' . $request->q . '%'))
+            ->when($request->filled('genre'), fn ($q) => $q->whereHas('genres', fn ($g) => $g->where('slug', $request->genre)))
+            ->when($request->filled('language'), fn ($q) => $q->where('language', $request->language))
+            ->when($request->filled('year'), fn ($q) => $q->whereYear('release_date', $request->year))
+            ->when($request->filled('status'), fn ($q) => $q->where('listing_status', $request->status))
+            ->orderByDesc('release_date')
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('movies.index', compact('movies', 'genres'));
+    }
+*/
 public function index(Request $request)
 {
     $genres = Genre::orderBy('name')->get();
@@ -50,9 +70,9 @@ public function index(Request $request)
 
 
 
-    /**
-     * AJAX instant search — used by the search bar's live dropdown.
-     */
+   
+     // AJAX instant search — used by the search bar's live dropdown.
+   
     public function search(Request $request)
     {
         $request->validate(['q' => 'required|string|min:1']);

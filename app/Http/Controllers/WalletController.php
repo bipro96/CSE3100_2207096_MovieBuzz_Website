@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 
 class WalletController extends Controller
 {
-    protected const RECHARGE_OPTIONS = [200, 500, 1000, 2000];
+    protected const RECHARGE_OPTIONS = [200, 500, 1000, 2000, 5000];
 
     public function __construct(protected WalletService $walletService)
     {

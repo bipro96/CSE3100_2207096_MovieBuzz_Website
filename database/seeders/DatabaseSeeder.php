@@ -39,7 +39,8 @@ class DatabaseSeeder extends Seeder
 
         $genres = [
             'Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary',
-           
+            'Drama', 'Family', 'Fantasy', 'Horror', 'Mystery', 'Romance',
+            'Science Fiction', 'Thriller', 'War', 'Western',
         ];
 
         foreach ($genres as $name) {
@@ -47,6 +48,6 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command->info('Admin login: bipro@moviebuzz.com / bipro096');
-        $this->command->info('Customer login: bbcustomer@moviebuzz.com / bipro096');
+        $this->command->info('Customer login: bbcustomer@moviebuzz.com / bipro096 (wallet preloaded with ৳500)');
     }
 }

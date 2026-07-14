@@ -36,20 +36,34 @@ class MovieController extends Controller
         return view('admin.movies.create', compact('genres'));
     }
 
-    /**
-     * AJAX: search TMDb by title, return a short list of matches for the admin to pick from.
-     */
+
+     // AJAX: search TMDb by title, return a short list of matches for the admin to pick from.
+
     public function tmdbSearch(Request $request)
     {
         $request->validate(['query' => 'required|string|min:2']);
 
+        try {
+            $results = $this->tmdb->search($request->query('query'));
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        $mapped = collect($results)->take(8)->map(fn ($r) => [
+            'tmdb_id' => $r['id'],
+            'title' => $r['title'] ?? $r['original_title'] ?? 'Untitled',
+            'release_date' => $r['release_date'] ?? null,
+            'poster_path' => $r['poster_path'] ?? null,
+            'poster_thumb' => $r['poster_path'] ? 'https://image.tmdb.org/t/p/w92' . $r['poster_path'] : null,
+        ])->values();
+
         return response()->json(['results' => $mapped]);
     }
 
-    /**
-     * AJAX: "Fetch Movie" button — pull full details for a specific TMDb ID
-     * and auto-fill the create/edit form. Does NOT save to DB yet.
-     */
+
+     //  AJAX: Fetch Movie button — pull full details for a specific TMDb ID
+     // auto-fill the create/edit form. Does NOT save to DB yet.
+    
     public function tmdbFetch(Request $request)
     {
         $request->validate(['tmdb_id' => 'required|integer']);
@@ -82,7 +96,7 @@ class MovieController extends Controller
             'original_title' => 'nullable|string|max:255',
             'original_language' => 'nullable|string|max:10',
             'overview' => 'nullable|string',
-            'poster_path' => 'nullable|string', // TMDb relative path from hidden field
+            'poster_path' => 'nullable|string', 
             'backdrop_path' => 'nullable|string',
             'release_date' => 'nullable|date',
             'runtime' => 'nullable|integer|min:0',
@@ -98,7 +112,7 @@ class MovieController extends Controller
             'is_active' => 'nullable|boolean',
             'genre_ids' => 'nullable|array',
             'genre_ids.*' => 'exists:genres,id',
-            'genre_names' => 'nullable|array', // for genres pulled from TMDb not yet in our DB
+            'genre_names' => 'nullable|array', 
             'genre_names.*' => 'string',
         ]);
 
@@ -106,7 +120,7 @@ class MovieController extends Controller
             $posterPath = $validated['poster_path'] ?? null;
             $backdropPath = $validated['backdrop_path'] ?? null;
 
-            // If the path still looks like a raw TMDb path (starts with "/"), download it locally.
+           
             if ($posterPath && str_starts_with($posterPath, '/')) {
                 $posterPath = $this->tmdb->downloadImage($posterPath, 'posters');
             }

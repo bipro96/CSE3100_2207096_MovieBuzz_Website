@@ -21,22 +21,16 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Public / Customer routes
-|--------------------------------------------------------------------------
-*/
+
+//Public / Customer routes
+
 
 Route::get('/', [MovieController::class, 'home'])->name('home');
 Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');
 Route::get('/movies/search', [MovieController::class, 'search'])->name('movies.search'); // AJAX
 Route::get('/movies/{slug}', [MovieController::class, 'show'])->name('movies.show');
 
-/*
-|--------------------------------------------------------------------------
-| Guest-only auth routes
-|--------------------------------------------------------------------------
-*/
+
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
@@ -56,11 +50,8 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-/*
-|--------------------------------------------------------------------------
-| Authenticated customer routes
-|--------------------------------------------------------------------------
-*/
+//customer routes
+
 
 Route::middleware('auth')->group(function () {
     Route::post('/movies/{movie}/wishlist', [MovieController::class, 'toggleWishlist'])->name('movies.wishlist.toggle');
@@ -85,11 +76,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Admin routes
-|--------------------------------------------------------------------------
-*/
+
+// Admin routes
+
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

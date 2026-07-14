@@ -18,7 +18,11 @@ return new class extends Migration
             $table->text('overview')->nullable();
             $table->string('poster_path')->nullable();
             $table->string('backdrop_path')->nullable();
-        
+            $table->date('release_date')->nullable();
+            $table->unsignedInteger('runtime')->nullable(); // minutes
+            $table->string('language')->nullable();
+            $table->decimal('popularity', 10, 3)->nullable();
+            $table->decimal('vote_average', 4, 2)->nullable();
             $table->unsignedInteger('vote_count')->nullable();
             $table->boolean('adult')->default(false);
             $table->string('status')->nullable(); // Released, Upcoming, etc (TMDb status)

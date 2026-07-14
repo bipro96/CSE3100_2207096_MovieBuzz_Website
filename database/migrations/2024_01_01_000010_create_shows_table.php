@@ -15,10 +15,10 @@ return new class extends Migration
             $table->foreignId('hall_id')->constrained()->cascadeOnDelete();
             $table->date('show_date');
             $table->time('show_time');
-            $table->dateTime('starts_at'); 
-            $table->dateTime('ends_at');   
+            $table->dateTime('starts_at'); // computed show_date + show_time, used for overlap & sorting
+            $table->dateTime('ends_at');   // starts_at + movie runtime
             $table->string('language')->nullable();
-            $table->string('format')->default('2D'); 
+            $table->string('format')->default('2D'); // 2D, 3D, IMAX...
             $table->decimal('ticket_price', 10, 2);
             $table->decimal('premium_price', 10, 2)->nullable();
             $table->decimal('vip_price', 10, 2)->nullable();

@@ -29,7 +29,19 @@ class GenreController extends Controller
         return back()->with('success', 'Genre added.');
     }
 
+    public function update(Request $request, Genre $genre)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:100|unique:genres,name,' . $genre->id,
+        ]);
 
+        $genre->update([
+            'name' => $validated['name'],
+            'slug' => Str::slug($validated['name']),
+        ]);
+
+        return back()->with('success', 'Genre updated.');
+    }
 
     public function destroy(Genre $genre)
     {
