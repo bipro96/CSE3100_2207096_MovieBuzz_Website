@@ -18,10 +18,9 @@ class BookingService
     {
     }
 
-    /*
-      Temporarily lock seats for a user while they're on the booking summary
-      page. Locks expire after 10 minutes (see ShowSeat::isBookable()).
-     */
+
+     // Temporarily lock seats for a user while they're on the booking summary
+    
     public function lockSeats(Show $show, array $seatCodes, User $user): array
     {
         return DB::transaction(function () use ($show, $seatCodes, $user) {
@@ -52,10 +51,9 @@ class BookingService
         });
     }
 
-    /*
-      Release seats a user locked but didn't complete payment for
-      when they navigated away from the summary page
-     */
+    
+     // Release seats a user locked but didn't complete payment for
+   
     public function releaseSeats(Show $show, array $seatCodes, User $user): void
     {
         ShowSeat::where('show_id', $show->id)
@@ -65,10 +63,8 @@ class BookingService
             ->update(['status' => 'available', 'locked_by' => null, 'locked_at' => null]);
     }
 
-    /*
-      Confirm the booking: verify locked seats belong to this user, debit the
-      wallet, mark seats booked, create Booking + BookingSeat + Payment rows.
-     */
+   // Confirm the booking: verify locked seats belong to this user, debit the
+     
     public function createBooking(Show $show, array $seatCodes, User $user): Booking
     {
         return DB::transaction(function () use ($show, $seatCodes, $user) {
@@ -103,7 +99,7 @@ class BookingService
                 'status' => 'confirmed',
             ]);
 
-            // Debit wallet — throws if insufficient balance
+            // Debit wallet — throws if insufficient balance, which rolls back
             // the whole transaction (booking + seat status changes included).
             $this->walletService->debit(
                 $user,
@@ -139,9 +135,10 @@ class BookingService
         });
     }
 
-    /*
-      Cancel a confirmed booking..see Booking::isCancellable()) and automatically refund  to wallet.
-     */
+    
+     // Cancel a confirmed booking (only allowed up to 2 hours before showtime,
+     // see Booking::isCancellable()) and automatically refund 100% to wallet.
+     
     public function cancelBooking(Booking $booking, bool $force = false): Booking
     {
         if (! $force && ! $booking->isCancellable()) {

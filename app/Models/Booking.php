@@ -41,9 +41,8 @@ class Booking extends Model
         return $this->hasOne(Payment::class);
     }
 
-    /**
-     * Cancellation is allowed up to 2 hours before showtime.
-     */
+     // Cancellation is allowed up to 2 hours before showtime.
+   
     public function isCancellable(): bool
     {
         return $this->status === 'confirmed'

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Cinema;
+use App\Models\Show;
 use Illuminate\Http\Request;
 
 class CinemaController extends Controller
@@ -30,7 +32,7 @@ class CinemaController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $validated['is_active'] = (bool) ($validated['is_active'] ?? true);
+        $validated['is_active'] = $request->boolean('is_active');
         Cinema::create($validated);
 
         return redirect()->route('admin.cinemas.index')->with('success', 'Cinema added.');
@@ -52,7 +54,7 @@ class CinemaController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
+        $validated['is_active'] = $request->boolean('is_active');
         $cinema->update($validated);
 
         return redirect()->route('admin.cinemas.index')->with('success', 'Cinema updated.');
@@ -60,7 +62,14 @@ class CinemaController extends Controller
 
     public function destroy(Cinema $cinema)
     {
-        $cinema->delete();
+        $showIds = Show::where('cinema_id', $cinema->id)->pluck('id');
+        $hasBookings = Booking::whereIn('show_id', $showIds)->exists();
+
+        if ($hasBookings) {
+            return back()->with('error', 'Cannot delete "' . $cinema->name . '" - it has shows with existing bookings. Set it to Inactive instead so booking history stays intact.');
+        }
+
+        $cinema->delete(); // halls/hall_seats/shows/show_seats cascade-delete automatically
         return back()->with('success', 'Cinema deleted.');
     }
 }

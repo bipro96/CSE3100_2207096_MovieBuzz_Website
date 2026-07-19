@@ -10,7 +10,9 @@
                 <i class="fa-solid fa-circle-check text-success" style="font-size:3rem"></i>
                 <h4 class="fw-bold mt-3">Booking Confirmed!</h4>
                 <p class="text-secondary">Booking Number: <strong>{{ $booking->booking_number }}</strong></p>
-
+     
+                //QR Code Generation for the booking ticket
+                
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($qrPayload) }}"
                      alt="Ticket QR Code" class="my-3 border rounded p-2 bg-white">
 

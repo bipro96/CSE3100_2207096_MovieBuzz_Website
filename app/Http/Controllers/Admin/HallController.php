@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Cinema;
 use App\Models\Hall;
 use App\Models\HallSeat;
+use App\Models\Show;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -120,7 +122,7 @@ class HallController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
+        $validated['is_active'] = $request->boolean('is_active');
         $hall->update($validated);
 
         return redirect()->route('admin.halls.index')->with('success', 'Hall updated.');
@@ -128,7 +130,14 @@ class HallController extends Controller
 
     public function destroy(Hall $hall)
     {
-        $hall->delete();
+        $showIds = Show::where('hall_id', $hall->id)->pluck('id');
+        $hasBookings = Booking::whereIn('show_id', $showIds)->exists();
+
+        if ($hasBookings) {
+            return back()->with('error', 'Cannot delete "' . $hall->name . '" - it has shows with existing bookings. Set it to Inactive instead so booking history stays intact.');
+        }
+
+        $hall->delete(); // hall_seats/shows/show_seats cascade-delete automatically
         return back()->with('success', 'Hall deleted.');
     }
 }

@@ -54,6 +54,9 @@
         </div>
     </div>
 
+
+    
+
     <div class="mb-filter-box p-3 mt-3 d-flex justify-content-between align-items-center">
         <div>
             <span class="small text-secondary">Selected: </span>
@@ -113,6 +116,8 @@ seatMap.querySelectorAll('.mb-seat:not(.mb-seat-blank):not(:disabled)').forEach(
     });
 });
 
+
+
 function updateSummary() {
     const codes = Array.from(selected.keys());
     selectedTextEl.innerText = codes.length ? codes.join(', ') : 'None';
@@ -149,3 +154,5 @@ proceedBtn.addEventListener('click', () => {
 });
 </script>
 @endpush
+
+

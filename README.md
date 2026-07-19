@@ -1,58 +1,426 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎬 MovieBuzz - Movie Ticket Booking Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+MovieBuzz is a full-stack movie ticket booking web application developed using **Laravel 12** and **MySQL**. The system allows customers to browse movies, book cinema tickets, make demo wallet payments, manage bookings, and request refunds. Administrators can manage movies, cinemas, halls, shows, bookings, users, and platform content through a dedicated admin dashboard.
 
-## About Laravel
+The project also integrates the **TMDB (The Movie Database) API**, allowing administrators to fetch movie information automatically by entering a movie title instead of manually filling every field.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Customer Features
 
-## Learning Laravel
+- User Registration & Login
+- Secure Authentication
+- Browse Movies
+- Search Movies
+- Movie Details Page
+- Browse Cinemas
+- Browse Available Shows
+- Seat Selection
+- Real-time Seat Availability
+- Demo Wallet Recharge
+- Ticket Booking
+- Booking Confirmation
+- Download Ticket
+- Booking History
+- Ticket Cancellation
+- Automatic Wallet Refund
+- Wishlist
+- Movie Reviews & Ratings
+- User Profile Management
+- Password Change
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Admin Features
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- Admin Login
+- Dashboard with Statistics
+- Movie Management (CRUD)
+- Fetch Movie Details from TMDB API
+- Automatic Movie Poster
+- Automatic Genres
+- Automatic Runtime
+- Automatic Release Date
+- Automatic Overview
+- Cinema Management
+- Hall Management
+- Seat Layout Management
+- Show Scheduling
+- Booking Management
+- User Management
+- Review Moderation
+- Coupon Management
+- Featured Movies
+- Cache Management
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+# TMDB API Integration
 
-```bash
-composer require laravel/boost --dev
+Instead of entering every movie manually, an administrator can simply type the movie title.
 
-php artisan boost:install
+Example:
+
+```
+Avengers
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+MovieBuzz automatically retrieves
 
-## Contributing
+- Poster
+- Backdrop
+- Overview
+- Genres
+- Release Date
+- Runtime
+- Language
+- Popularity
+- Rating
+- Vote Count
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+using
 
-## Code of Conduct
+```
+https://api.themoviedb.org
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+# Booking Workflow
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+Customer Registration
+        │
+        ▼
+Browse Movies
+        │
+        ▼
+Select Movie
+        │
+        ▼
+Select Cinema
+        │
+        ▼
+Select Show
+        │
+        ▼
+Choose Seats
+        │
+        ▼
+Payment (Demo Wallet)
+        │
+        ▼
+Booking Confirmed
+        │
+        ▼
+Download Ticket
+```
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Ticket Cancellation Workflow
+
+```
+Booking
+     │
+     ▼
+Cancel Ticket
+     │
+     ▼
+Booking Status Updated
+     │
+     ▼
+Refund Added To Wallet
+```
+
+---
+
+# Admin Workflow
+
+```
+Admin Login
+      │
+      ▼
+Dashboard
+      │
+      ├── Movies
+      ├── Cinemas
+      ├── Halls
+      ├── Shows
+      ├── Users
+      ├── Bookings
+      ├── Reviews
+      └── Coupons
+```
+
+---
+
+# Technology Stack
+
+## Backend
+
+- Laravel 12
+- PHP 8.4
+
+## Frontend
+
+- Blade Templates
+- Bootstrap 5
+- JavaScript
+- AJAX
+
+## Database
+
+- MySQL
+- phpMyAdmin
+
+## API
+
+- TMDB API
+
+## Authentication
+
+- Laravel Authentication
+- Admin Guard
+- Customer Guard
+
+---
+
+# Database
+
+The project uses MySQL.
+
+Main entities include
+
+- Users
+- Admins
+- Movies
+- Genres
+- Cinemas
+- Halls
+- Seats
+- Shows
+- Bookings
+- Booking Seats
+- Payments
+- Wallet Transactions
+- Reviews
+- Coupons
+- Wishlists
+
+---
+
+# Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/yourusername/MovieBuzz.git
+```
+
+---
+
+## Enter Project
+
+```bash
+cd MovieBuzz
+```
+
+---
+
+## Install Dependencies
+
+```bash
+composer install
+```
+
+```bash
+npm install
+```
+
+---
+
+## Environment
+
+Copy
+
+```bash
+.env.example
+```
+
+to
+
+```bash
+.env
+```
+
+Generate key
+
+```bash
+php artisan key:generate
+```
+
+---
+
+## Configure Database
+
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=moviebuzz
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+---
+
+## TMDB API
+
+Add your API key inside `.env`
+
+```
+TMDB_API_KEY=YOUR_API_KEY
+```
+
+---
+
+## Run Migrations
+
+```bash
+php artisan migrate
+```
+
+---
+
+## Seed Database
+
+```bash
+php artisan db:seed
+```
+
+---
+
+## Storage Link
+
+```bash
+php artisan storage:link
+```
+
+---
+
+## Start Server
+
+```bash
+php artisan serve
+```
+
+---
+
+# Project Structure
+
+```
+app/
+    Http/
+    Models/
+    Services/
+
+resources/
+    views/
+        admin/
+        customer/
+
+routes/
+    web.php
+    admin.php
+
+database/
+    migrations/
+    seeders/
+
+public/
+
+storage/
+```
+
+---
+
+# Screens
+
+### Customer
+
+- Home
+- Movie List
+- Movie Details
+- Seat Selection
+- Booking Summary
+- Wallet
+- Booking History
+- Profile
+
+### Admin
+
+- Dashboard
+- Movies
+- Cinemas
+- Halls
+- Shows
+- Bookings
+- Users
+- Reviews
+- Coupons
+
+---
+
+# Demo Payment
+
+MovieBuzz uses a **Demo Wallet Payment System**.
+
+Customers can
+
+- Recharge Wallet
+- Book Tickets
+- Receive Refunds
+- View Wallet Transactions
+
+No real payment gateway is required.
+
+---
+
+# Future Improvements
+
+- SSLCommerz Integration
+- Stripe Integration
+- Razorpay Integration
+- Email Ticket Delivery
+- QR Code Ticket Verification
+- Push Notifications
+- Multi-Cinema Support
+- Mobile Application
+- Online Food Ordering
+- Loyalty Rewards
+- Recommendation System
+
+---
+
+# Author
+
+**Bipro Biswas**
+
+Department of Computer Science and Engineering
+
+Khulna University of Engineering & Technology (KUET)
+
+Bangladesh
+
+---
+
+# License
+
+This project was developed for educational and academic purposes.
+
+```
+© MovieBuzz - Movie Ticket Booking Platform
+```

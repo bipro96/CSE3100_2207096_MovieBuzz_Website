@@ -25,8 +25,8 @@ class TMDbService
         }
     }
 
-    
-      // Quick search — used for the admin type-ahead suggestions list.
+ 
+     // Quick search — used for the admin type-ahead suggestions list.
      
     public function search(string $query): array
     {
@@ -47,10 +47,10 @@ class TMDbService
         return $response->json('results', []);
     }
 
-    
-     // Fetch full movie details (with genres resolved) for a given TMDb movie ID.
-     // This is what powers the "Fetch Movie" auto-fill button.
-     
+  
+     // Fetch full movie details for a given TMDb movie ID.
+  
+   
     public function fetchMovieDetails(int $tmdbId): array
     {
         $this->ensureConfigured();
@@ -92,11 +92,11 @@ class TMDbService
         ];
     }
 
-    /*
-     Download a TMDb image (poster or backdrop) and store it locally under
-     storage/app/public/posters. Returns the RELATIVE path to save in the DB,
-     or null if the source path was empty / download failed.
-     */
+   
+    //  Download a TMDb image (poster or backdrop) and store it locally under..
+    //  storage/app/public/posters..
+    
+     
     public function downloadImage(?string $tmdbRelativePath, string $folder = 'posters'): ?string
     {
         if (empty($tmdbRelativePath)) {
@@ -116,6 +116,6 @@ class TMDbService
 
         Storage::disk('public')->put($filename, $response->body());
 
-        return $filename; // relative path stored in DB, e.g. posters/uuid.jpg
+        return $filename; // relative path stored in DB
     }
 }

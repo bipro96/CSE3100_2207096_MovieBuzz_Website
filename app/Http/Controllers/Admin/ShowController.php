@@ -69,8 +69,8 @@ class ShowController extends Controller
         return view('admin.shows.edit', compact('show'));
     }
 
- 
-   // Only price/status/language/format are editable after seats exist,
+      // Only price/status/language/format are editable after seats exist,
+     //to avoid orphaning already-booked seats.
      
     public function update(Request $request, Show $show)
     {
@@ -88,9 +88,9 @@ class ShowController extends Controller
         return redirect()->route('admin.shows.index')->with('success', 'Show updated.');
     }
 
-  
-     // Cancelling a show refunds every confirmed booking automatically.
    
+     // Cancelling a show refunds every confirmed booking automatically.
+     
     public function destroy(Show $show)
     {
         $bookings = $show->bookings()->where('status', 'confirmed')->get();
@@ -99,7 +99,7 @@ class ShowController extends Controller
             try {
                 $this->bookingService->cancelBooking($booking, force: true);
             } catch (RuntimeException $e) {
-                
+                // Show is within the 2-hour cutoff for this booking; still cancel the show itself below.
             }
         }
 
@@ -108,9 +108,9 @@ class ShowController extends Controller
         return back()->with('success', 'Show cancelled. ' . $bookings->count() . ' booking(s) refunded.');
     }
 
-  
-     // AJAX.. fetch halls belonging to a cinema, for the create-show form.
- 
+   
+     // AJAX: fetch halls belonging to a cinema, for the create-show form.
+    
     public function hallsForCinema(Cinema $cinema)
     {
         return response()->json($cinema->halls()->where('is_active', true)->get(['id', 'name']));

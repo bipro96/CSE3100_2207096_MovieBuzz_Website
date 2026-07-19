@@ -44,4 +44,13 @@ class NewPasswordController extends Controller
             ? redirect()->route('login')->with('success', __($status))
             : back()->withErrors(['email' => [__($status)]]);
     }
+
+
+
+
+
+
+
+
+
 }

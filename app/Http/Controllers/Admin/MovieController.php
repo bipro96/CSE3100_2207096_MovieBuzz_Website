@@ -3,17 +3,26 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Genre;
 use App\Models\Movie;
 use App\Services\TMDbService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class MovieController extends Controller
 {
     public function __construct(protected TMDbService $tmdb)
     {
+    }
+
+    protected function clearListingCache(): void
+    {
+        foreach (['home.featured', 'home.now_showing', 'home.upcoming', 'genres.all'] as $key) {
+            Cache::store('file')->forget($key);
+        }
     }
 
     public function index(Request $request)
@@ -36,9 +45,7 @@ class MovieController extends Controller
         return view('admin.movies.create', compact('genres'));
     }
 
-
-     // AJAX: search TMDb by title, return a short list of matches for the admin to pick from.
-
+    
     public function tmdbSearch(Request $request)
     {
         $request->validate(['query' => 'required|string|min:2']);
@@ -60,15 +67,20 @@ class MovieController extends Controller
         return response()->json(['results' => $mapped]);
     }
 
-
-     //  AJAX: Fetch Movie button — pull full details for a specific TMDb ID
-     // auto-fill the create/edit form. Does NOT save to DB yet.
-    
+   
     public function tmdbFetch(Request $request)
     {
-        $request->validate(['tmdb_id' => 'required|integer']);
+        $request->validate([
+            'tmdb_id' => 'required|integer',
+            'movie_id' => 'nullable|exists:movies,id', 
+        ]);
+    //Checks if the movie already exits or not..
+        $duplicateQuery = Movie::where('tmdb_id', $request->tmdb_id);
+        if ($request->filled('movie_id')) {
+            $duplicateQuery->where('id', '!=', $request->movie_id);
+        }
 
-        if (Movie::where('tmdb_id', $request->tmdb_id)->exists()) {
+        if ($duplicateQuery->exists()) {
             return response()->json(['message' => 'This movie has already been added.'], 422);
         }
 
@@ -96,8 +108,10 @@ class MovieController extends Controller
             'original_title' => 'nullable|string|max:255',
             'original_language' => 'nullable|string|max:10',
             'overview' => 'nullable|string',
-            'poster_path' => 'nullable|string', 
+            'poster_path' => 'nullable|string', // TMDb relative path from hidden field
             'backdrop_path' => 'nullable|string',
+            'trailer_key' => 'nullable|string|max:50',
+            'cast_json' => 'nullable|string', // JSON string from hidden field, decoded below
             'release_date' => 'nullable|date',
             'runtime' => 'nullable|integer|min:0',
             'language' => 'nullable|string|max:50',
@@ -112,15 +126,15 @@ class MovieController extends Controller
             'is_active' => 'nullable|boolean',
             'genre_ids' => 'nullable|array',
             'genre_ids.*' => 'exists:genres,id',
-            'genre_names' => 'nullable|array', 
+            'genre_names' => 'nullable|array', // for genres pulled from TMDb not yet in our DB
             'genre_names.*' => 'string',
         ]);
 
-        DB::transaction(function () use ($validated, &$movie) {
+        DB::transaction(function () use ($request, $validated, &$movie) {
             $posterPath = $validated['poster_path'] ?? null;
             $backdropPath = $validated['backdrop_path'] ?? null;
 
-           
+            // If the path still looks like a raw TMDb path (starts with "/"), download it locally.
             if ($posterPath && str_starts_with($posterPath, '/')) {
                 $posterPath = $this->tmdb->downloadImage($posterPath, 'posters');
             }
@@ -128,13 +142,22 @@ class MovieController extends Controller
                 $backdropPath = $this->tmdb->downloadImage($backdropPath, 'backdrops');
             }
 
+  /*
+            $castData = null;
+            if (! empty($validated['cast_json'])) {
+                $decoded = json_decode($validated['cast_json'], true);
+                $castData = is_array($decoded) ? $decoded : null;
+            } 
+                */
+
             $movie = Movie::create([
                 ...$validated,
                 'poster_path' => $posterPath,
                 'backdrop_path' => $backdropPath,
-                'adult' => (bool) ($validated['adult'] ?? false),
-                'is_featured' => (bool) ($validated['is_featured'] ?? false),
-                'is_active' => (bool) ($validated['is_active'] ?? true),
+                'cast_json' => $castData,
+                'adult' => $request->boolean('adult'),
+                'is_featured' => $request->boolean('is_featured'),
+                'is_active' => $request->boolean('is_active'),
             ]);
 
             $genreIds = $validated['genre_ids'] ?? [];
@@ -149,6 +172,8 @@ class MovieController extends Controller
 
             $movie->genres()->sync(array_unique($genreIds));
         });
+
+        $this->clearListingCache();
 
         return redirect()->route('admin.movies.index')->with('success', 'Movie added successfully.');
     }
@@ -168,6 +193,8 @@ class MovieController extends Controller
             'release_date' => 'nullable|date',
             'runtime' => 'nullable|integer|min:0',
             'language' => 'nullable|string|max:50',
+            'trailer_key' => 'nullable|string|max:50',
+            'cast_json' => 'nullable|string', // JSON string, only present after "Refresh from TMDb"
             'listing_status' => ['required', Rule::in(['now_showing', 'upcoming', 'archived'])],
             'is_featured' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
@@ -184,30 +211,50 @@ class MovieController extends Controller
             $validated['backdrop_path'] = $request->file('backdrop')->store('backdrops', 'public');
         }
 
-        $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
-        $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
+        $validated['is_featured'] = $request->boolean('is_featured');
+        $validated['is_active'] = $request->boolean('is_active');
+
+        // Cast only changes when the admin clicked "Refresh from TMDb"; otherwise
+        
+        if (! empty($validated['cast_json'])) {
+            $decoded = json_decode($validated['cast_json'], true);
+            $validated['cast_json'] = is_array($decoded) ? $decoded : null;
+        } else {
+            unset($validated['cast_json']);
+        }
 
         $movie->update(collect($validated)->except(['genre_ids', 'poster', 'backdrop'])->all());
         $movie->genres()->sync($validated['genre_ids'] ?? []);
+
+        $this->clearListingCache();
 
         return redirect()->route('admin.movies.index')->with('success', 'Movie updated successfully.');
     }
 
     public function destroy(Movie $movie)
     {
-        $movie->delete();
+        $hasBookings = Booking::whereIn('show_id', $movie->shows()->pluck('id'))->exists();
+
+        if ($hasBookings) {
+            return back()->with('error', 'Cannot delete "' . $movie->title . '" - it has existing bookings tied to its shows. Use the "Active" toggle to hide it from customers instead, so booking history stays intact.');
+        }
+
+        $movie->delete(); // shows/show_seats for this movie cascade-delete automatically (no bookings exist to block it)
+        $this->clearListingCache();
         return back()->with('success', 'Movie deleted.');
     }
 
     public function toggleActive(Movie $movie)
     {
         $movie->update(['is_active' => ! $movie->is_active]);
+        $this->clearListingCache();
         return back()->with('success', 'Movie status updated.');
     }
 
     public function toggleFeatured(Movie $movie)
     {
         $movie->update(['is_featured' => ! $movie->is_featured]);
+        $this->clearListingCache();
         return back()->with('success', 'Featured status updated.');
     }
 }
