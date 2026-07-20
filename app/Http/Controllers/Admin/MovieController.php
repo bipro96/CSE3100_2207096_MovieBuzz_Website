@@ -142,13 +142,6 @@ class MovieController extends Controller
                 $backdropPath = $this->tmdb->downloadImage($backdropPath, 'backdrops');
             }
 
-  /*
-            $castData = null;
-            if (! empty($validated['cast_json'])) {
-                $decoded = json_decode($validated['cast_json'], true);
-                $castData = is_array($decoded) ? $decoded : null;
-            } 
-                */
 
             $movie = Movie::create([
                 ...$validated,
