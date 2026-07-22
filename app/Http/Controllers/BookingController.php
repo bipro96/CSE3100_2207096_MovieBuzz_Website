@@ -17,9 +17,9 @@ class BookingController extends Controller
     ) {
     }
 
-   
+
      // Seat selection page for a given show.
-   
+     
     public function seats(Show $show)
     {
         if ($show->starts_at->isPast()) {
@@ -35,10 +35,9 @@ class BookingController extends Controller
         return view('booking.seats', compact('show', 'seatsByRow'));
     }
 
-    /**
-     * AJAX: lock the selected seats for this user for 10 minutes and
-     * move them to the summary step.
-     */
+    //AJAX: lock the selected seats for this user for 10 minutes and
+     // move them to the summary step.
+     
     public function lock(Request $request, Show $show)
     {
         $request->validate([
@@ -57,9 +56,9 @@ class BookingController extends Controller
         ]);
     }
 
-    /**
-     * Booking summary page - shows chosen seats, price breakdown, wallet balance.
-     */
+   
+     // Booking summary page - shows chosen seats, price breakdown, wallet balance.
+ 
     public function summary(Request $request, Show $show)
     {
         $seatCodes = array_filter(explode(',', $request->query('seats', '')));
@@ -81,9 +80,8 @@ class BookingController extends Controller
         return view('booking.summary', compact('show', 'seats', 'wallet', 'total', 'seatCodes'));
     }
 
-    /**
-     * Confirm & pay with wallet.
-     */
+     // Confirm & pay with wallet.
+     
     public function confirm(Request $request, Show $show)
     {
         $request->validate([
@@ -101,9 +99,9 @@ class BookingController extends Controller
         return redirect()->route('booking.success', $booking)->with('success', 'Booking confirmed! Enjoy the show.');
     }
 
-    /**
-     * Release seats if the user backs out of the summary page.
-     */
+  
+     // Release seats if the user backs out of the summary page.
+     
     public function cancelHold(Request $request, Show $show)
     {
         $seatCodes = array_filter(explode(',', $request->input('seats', '')));

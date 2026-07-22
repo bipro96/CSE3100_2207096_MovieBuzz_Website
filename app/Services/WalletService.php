@@ -11,17 +11,24 @@ use Illuminate\Support\Str;
 use RuntimeException;
 
 class WalletService
-{   // Get or create the wallet for a user.  
+{
+    /**
+     * Get or create the wallet for a user.
+     */
     public function walletFor(User $user): Wallet
     {
         return Wallet::firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
     }
-     //Add funds to a user's wallet (demo recharge — no gateway/approval needed). 
+
+    /**
+     * Add funds to a user's wallet (demo recharge — no gateway/approval needed).
+     */
     public function recharge(User $user, float $amount): WalletTransaction
     {
         if ($amount <= 0) {
             throw new RuntimeException('Recharge amount must be greater than zero.');
         }
+
         return DB::transaction(function () use ($user, $amount) {
             $wallet = $this->walletFor($user);
             $wallet = Wallet::where('id', $wallet->id)->lockForUpdate()->first();
@@ -40,9 +47,9 @@ class WalletService
         });
     }
 
-    
-     // Debit funds from a wallet for a booking payment. Throws if insufficient balance.
-     
+    /**
+     * Debit funds from a wallet for a booking payment. Throws if insufficient balance.
+     */
     public function debit(User $user, float $amount, ?Model $transactionable = null, ?string $description = null): WalletTransaction
     {
         if ($amount <= 0) {
@@ -73,9 +80,9 @@ class WalletService
         });
     }
 
-  
-     // Refund funds back to a wallet (when ticket cancellation).
-     
+    /**
+     * Refund funds back to a wallet (e.g. ticket cancellation).
+     */
     public function refund(User $user, float $amount, ?Model $transactionable = null, ?string $description = null): WalletTransaction
     {
         if ($amount <= 0) {

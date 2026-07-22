@@ -11,9 +11,10 @@ use RuntimeException;
 
 class ShowService
 {
-    // Check whether a new show would overlap an existing show in the same hall.
-     // $ignoreShowId is used when updating an existing show.
-    
+    /**
+     * Check whether a new show would overlap an existing show in the same hall.
+     * $ignoreShowId is used when updating an existing show.
+     */
     public function hasOverlap(int $hallId, Carbon $startsAt, Carbon $endsAt, ?int $ignoreShowId = null): bool
     {
         return Show::where('hall_id', $hallId)
@@ -29,10 +30,11 @@ class ShowService
             ->exists();
     }
 
-     // Create a show and snapshot the hall's seat layout into show_seats with
-     // per-type pricing, so later changes to the hall layout never affect
-     // already-scheduled shows.
-    
+    /**
+     * Create a show and snapshot the hall's seat layout into show_seats with
+     * per-type pricing, so later changes to the hall layout never affect
+     * already-scheduled shows.
+     */
     public function createShow(array $data): Show
     {
         $hall = Hall::with('seats')->findOrFail($data['hall_id']);
@@ -90,7 +92,8 @@ class ShowService
     public function cancelShow(Show $show): void
     {
         $show->update(['status' => 'cancelled']);
-        // Any confirmed bookings for a cancelled show should be refunded
-        
+        // Any confirmed bookings for a cancelled show should be refunded by
+        // an admin action (see Admin\ShowController::cancel) which loops
+        // bookings through BookingService::cancel for a full audit trail.
     }
 }

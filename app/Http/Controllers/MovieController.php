@@ -70,9 +70,9 @@ public function index(Request $request)
 
 
 
-   
-     // AJAX instant search — used by the search bar's live dropdown.
-   
+    /**
+     * AJAX instant search — used by the search bar's live dropdown.
+     */
     public function search(Request $request)
     {
         $request->validate(['q' => 'required|string|min:1']);

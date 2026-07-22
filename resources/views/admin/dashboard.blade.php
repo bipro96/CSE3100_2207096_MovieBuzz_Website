@@ -45,32 +45,11 @@
 </div>
 
 <div class="row g-3 mb-4">
-    <div class="col-md-8">
-        <div class="admin-panel-box p-3">
-            <h6 class="fw-bold mb-3">Revenue by Month</h6>
-            <canvas id="revenueChart" height="90"></canvas>
-        </div>
-    </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="admin-panel-box p-3">
             <h6 class="fw-bold mb-3">Total Wallet Balance</h6>
             <h2 class="text-warning">৳{{ number_format($stats['total_wallet_balance'], 2) }}</h2>
-            <p class="small text-secondary">Sum of all customer wallet balances (demo currency).</p>
-        </div>
-    </div>
-</div>
-
-<div class="row g-3 mb-4">
-    <div class="col-md-6">
-        <div class="admin-panel-box p-3">
-            <h6 class="fw-bold mb-3">Most Popular Movies</h6>
-            <canvas id="popularMoviesChart" height="120"></canvas>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="admin-panel-box p-3">
-            <h6 class="fw-bold mb-3">Most Booked Cinemas</h6>
-            <canvas id="popularCinemasChart" height="120"></canvas>
+            <p class="small text-secondary mb-0">Sum of all customer wallet balances (demo currency).</p>
         </div>
     </div>
 </div>
@@ -120,37 +99,3 @@
 </div>
 
 @endsection
-
-@push('scripts')
-<script>
-const revenueData = @json($revenueByMonth);
-new Chart(document.getElementById('revenueChart'), {
-    type: 'line',
-    data: {
-        labels: revenueData.map(r => r.month),
-        datasets: [{ label: 'Revenue (৳)', data: revenueData.map(r => r.revenue), borderColor: '#f4b400', tension: 0.35, fill: false }]
-    },
-    options: { plugins: { legend: { display: false } } }
-});
-
-const popularMovies = @json($popularMovies);
-new Chart(document.getElementById('popularMoviesChart'), {
-    type: 'bar',
-    data: {
-        labels: popularMovies.map(m => m.title),
-        datasets: [{ label: 'Bookings', data: popularMovies.map(m => m.bookings_count), backgroundColor: '#f4b400' }]
-    },
-    options: { indexAxis: 'y', plugins: { legend: { display: false } } }
-});
-
-const popularCinemas = @json($popularCinemas);
-new Chart(document.getElementById('popularCinemasChart'), {
-    type: 'bar',
-    data: {
-        labels: popularCinemas.map(c => c.name),
-        datasets: [{ label: 'Bookings', data: popularCinemas.map(c => c.bookings_count), backgroundColor: '#5b8def' }]
-    },
-    options: { indexAxis: 'y', plugins: { legend: { display: false } } }
-});
-</script>
-@endpush
